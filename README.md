@@ -1,0 +1,1 @@
+# easy-next-blog
