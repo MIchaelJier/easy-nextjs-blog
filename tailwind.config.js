@@ -7,6 +7,9 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
+      zIndex: {
+        100: '100',
+      },
       spacing: {
         '9/16': '56.25%',
       },
