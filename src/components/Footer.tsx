@@ -1,3 +1,11 @@
+/*
+ * @Description: 头部注释: ...
+ * @Version: 1.0.0
+ * @Autor: michael_jier
+ * @Date: 2022-03-15 23:46:26
+ * @LastEditors: michael_jier
+ * @LastEditTime: 2022-04-07 10:19:02
+ */
 import Link from './Link'
 import siteMetadata from '@/data/siteMetadata'
 import SocialIcon from '@/components/social-icons'
@@ -21,7 +29,15 @@ export default function Footer() {
           <div>{` • `}</div>
           <Link href="/">{siteMetadata.title}</Link>
         </div>
-        <div className="mb-8 text-sm text-gray-500 dark:text-gray-400">浙ICP备19051061号-1</div>
+        <a
+          className="mb-8 text-sm text-gray-500 dark:text-gray-400"
+          href="http://beian.miit.gov.cn/?spm=a2c4g.11186623.7y9jhqsfz.109.69227dc6nWU5lo"
+          target="_blank"
+          data-spm-anchor-id="a2c4g.11186623.7y9jhqsfz.109"
+          rel="noreferrer"
+        >
+          浙ICP备19051061号-2
+        </a>
       </div>
     </footer>
   )

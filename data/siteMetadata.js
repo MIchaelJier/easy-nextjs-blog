@@ -11,7 +11,7 @@ const siteMetadata = {
   image: '/static/images/avatar.png',
   email: 'chem908430737@gmail.com',
   github: 'https://github.com/MIchaelJier',
-  juejin: 'https://juejin.cn/user/2189882895384093',
+  juejin: 'https://juejin.cn/user/835284569426029',
   locale: 'zh-CN',
   welcome: 'never stop exploring',
   analytics: {
