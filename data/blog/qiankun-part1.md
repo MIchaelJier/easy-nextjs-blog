@@ -13,7 +13,8 @@ layout: PostLayout
 
 对于 qiankun 来说，路由劫持是在 single-spa 上去做的，而 qiankun 给我们提供的能力，主要便是子应用的加载和沙箱隔离。
 
-> [参考 1：css 样式隔离和 js 沙箱](https://juejin.cn/post/6896643767353212935#heading-4) > [参考 2：js 沙箱，Web Worker](https://mp.weixin.qq.com/s/VRERMga1noJJVZJdvl7n3Q)
+> [参考 1：css 样式隔离和 js 沙箱](https://juejin.cn/post/6896643767353212935#heading-4)  
+> [参考 2：js 沙箱，Web Worker](https://mp.weixin.qq.com/s/VRERMga1noJJVZJdvl7n3Q)
 
 #### css 样式隔离
 
@@ -59,7 +60,7 @@ qiankun 内部提供了 initGlobalState 方法用于注册 MicroAppStateActions 
 - setGlobalState：设置 globalState - 设置新的值时，内部将执行 浅检查，如果检查到 globalState 发生改变则触发通知，通知到所有的 观察者 函数。
 - onGlobalStateChange：注册 观察者 函数 - 响应 globalState 变化，在 globalState 发生改变时触发该 观察者 函数。
 - offGlobalStateChange：取消 观察者 函数 - 该实例不再响应 globalState 变化。
-  ![](/static/images/16350881224248.jpg)
+  ![](//www.michaeljier.cn/m-picture/qiankun-part1/16350881224248.jpg)
 
 ##### 优缺点：
 
