@@ -4,7 +4,7 @@ date: '2022/2/11'
 lastmod: '2022/3/10'
 tags: [Qiankun, 微前端]
 draft: false
-summary: 'HTML Entry 是什么? JS Entry 有什么问题?'
+summary: '乾坤里的HTML Entry是什么? JS Entry有什么问题？为什么说HTML Entry比JS Entry更有优势？'
 images: ['/static/images/16350881224248.jpg']
 layout: PostLayout
 ---
@@ -50,6 +50,12 @@ singleSpa.registerApplication(
 ```
 
 > 想要了解 single-spa 的基础使用和源码原理可以去看看[微前端框架 之 single-spa 从入门到精通](https://mp.weixin.qq.com/s?__biz=MzA3NTk4NjQ1OQ==&mid=2247484245&idx=1&sn=9ee91018578e6189f3b11a4d688228c5&chksm=9f696021a81ee937847c962e3135017fff9ba8fd0b61f782d7245df98582a1410aa000dc5fdc&token=165646905&lang=zh_CN#rd)
+
+## 对比
+
+那么让我们来对比一下两者：
+
+![](//www.michaeljier.cn/m-picture/html-entry/compare-entry.png)
 
 ## 原理简述
 
