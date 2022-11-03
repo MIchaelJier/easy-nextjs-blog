@@ -122,123 +122,70 @@ HTML Entry 是由 [import-html-entry](https://github.com/kuitos/import-html-entr
 
 ### 具体源码
 
-#### importEntry
+- <details>
+      <summary>importEntry</summary>
+      ```js
+      /**
+      * 加载指定地址的首屏内容
+      * @param {*} entry 可以是一个字符串格式的地址，比如 localhost:8080，也可以是一个配置对象，比如 { scripts, styles, html }
+      * @param {*} opts
+      * return importHTML 的执行结果
+      */
+      export function importEntry(entry, opts = {}) {
+        // 从 opt 参数中解析出 fetch 方法 和 getTemplate 方法，没有就用默认的
+        const { fetch = defaultFetch, getTemplate = defaultGetTemplate } = opts
+        // 获取静态资源地址的一个方法
+        const getPublicPath = opts.getPublicPath || opts.getDomain || defaultGetPublicPath
 
-```js
-/**
- * 加载指定地址的首屏内容
- * @param {*} entry 可以是一个字符串格式的地址，比如 localhost:8080，也可以是一个配置对象，比如 { scripts, styles, html }
- * @param {*} opts
- * return importHTML 的执行结果
- */
-export function importEntry(entry, opts = {}) {
-  // 从 opt 参数中解析出 fetch 方法 和 getTemplate 方法，没有就用默认的
-  const { fetch = defaultFetch, getTemplate = defaultGetTemplate } = opts
-  // 获取静态资源地址的一个方法
-  const getPublicPath = opts.getPublicPath || opts.getDomain || defaultGetPublicPath
-
-  if (!entry) {
-    throw new SyntaxError('entry should not be empty!')
-  }
-
-  // html entry，entry 是一个字符串格式的地址
-  if (typeof entry === 'string') {
-    return importHTML(entry, { fetch, getPublicPath, getTemplate })
-  }
-
-  // config entry，entry 是一个对象 = { scripts, styles, html }
-  if (Array.isArray(entry.scripts) || Array.isArray(entry.styles)) {
-    const { scripts = [], styles = [], html = '' } = entry
-    const setStylePlaceholder2HTML = (tpl) =>
-      styles.reduceRight((html, styleSrc) => `${genLinkReplaceSymbol(styleSrc)}${html}`, tpl)
-    const setScriptPlaceholder2HTML = (tpl) =>
-      scripts.reduce((html, scriptSrc) => `${html}${genScriptReplaceSymbol(scriptSrc)}`, tpl)
-
-    return getEmbedHTML(
-      getTemplate(setScriptPlaceholder2HTML(setStylePlaceholder2HTML(html))),
-      styles,
-      { fetch }
-    ).then((embedHTML) => ({
-      template: embedHTML,
-      assetPublicPath: getPublicPath(entry),
-      getExternalScripts: () => getExternalScripts(scripts, fetch),
-      getExternalStyleSheets: () => getExternalStyleSheets(styles, fetch),
-      execScripts: (proxy, strictGlobal) => {
-        if (!scripts.length) {
-          return Promise.resolve()
+        if (!entry) {
+          throw new SyntaxError('entry should not be empty!')
         }
-        return execScripts(scripts[scripts.length - 1], scripts, proxy, { fetch, strictGlobal })
-      },
-    }))
-  } else {
-    throw new SyntaxError('entry scripts or styles should be array!')
-  }
-}
-```
 
-#### importHTML
+        // html entry，entry 是一个字符串格式的地址
+        if (typeof entry === 'string') {
+          return importHTML(entry, { fetch, getPublicPath, getTemplate })
+        }
 
-```js
-/**
- * 加载指定地址的首屏内容
- * @param {*} url 
- * @param {*} opts 
- * return Promise<{
-  	// template 是 link 替换为 style 后的 template
-		template: embedHTML,
-		// 静态资源地址
-		assetPublicPath,
-		// 获取外部脚本，最终得到所有脚本的代码内容
-		getExternalScripts: () => getExternalScripts(scripts, fetch),
-		// 获取外部样式文件的内容
-		getExternalStyleSheets: () => getExternalStyleSheets(styles, fetch),
-		// 脚本执行器，让 JS 代码(scripts)在指定 上下文 中运行
-		execScripts: (proxy, strictGlobal) => {
-			if (!scripts.length) {
-				return Promise.resolve();
-			}
-			return execScripts(entry, scripts, proxy, { fetch, strictGlobal });
-		},
-   }>
- */
-export default function importHTML(url, opts = {}) {
-  // 三个默认的方法
-  let fetch = defaultFetch
-  let getPublicPath = defaultGetPublicPath
-  let getTemplate = defaultGetTemplate
+        // config entry，entry 是一个对象 = { scripts, styles, html }
+        if (Array.isArray(entry.scripts) || Array.isArray(entry.styles)) {
+          const { scripts = [], styles = [], html = '' } = entry
+          const setStylePlaceholder2HTML = (tpl) =>
+            styles.reduceRight((html, styleSrc) => `${genLinkReplaceSymbol(styleSrc)}${html}`, tpl)
+          const setScriptPlaceholder2HTML = (tpl) =>
+            scripts.reduce((html, scriptSrc) => `${html}${genScriptReplaceSymbol(scriptSrc)}`, tpl)
 
-  if (typeof opts === 'function') {
-    // if 分支，兼容遗留的 importHTML api，ops 可以直接是一个 fetch 方法
-    fetch = opts
-  } else {
-    // 用用户传递的参数（如果提供了的话）覆盖默认方法
-    fetch = opts.fetch || defaultFetch
-    getPublicPath = opts.getPublicPath || opts.getDomain || defaultGetPublicPath
-    getTemplate = opts.getTemplate || defaultGetTemplate
-  }
+          return getEmbedHTML(
+            getTemplate(setScriptPlaceholder2HTML(setStylePlaceholder2HTML(html))),
+            styles,
+            { fetch }
+          ).then((embedHTML) => ({
+            template: embedHTML,
+            assetPublicPath: getPublicPath(entry),
+            getExternalScripts: () => getExternalScripts(scripts, fetch),
+            getExternalStyleSheets: () => getExternalStyleSheets(styles, fetch),
+            execScripts: (proxy, strictGlobal) => {
+              if (!scripts.length) {
+                return Promise.resolve()
+              }
+              return execScripts(scripts[scripts.length - 1], scripts, proxy, { fetch, strictGlobal })
+            },
+          }))
+        } else {
+          throw new SyntaxError('entry scripts or styles should be array!')
+        }
+      }
+      ```
 
-  // 通过 fetch 方法请求 url，这也就是 qiankun 为什么要求你的微应用要支持跨域的原因
-  return (
-    embedHTMLCache[url] ||
-    (embedHTMLCache[url] = fetch(url)
-      // response.text() 是一个 html 模版
-      .then((response) => response.text())
-      .then((html) => {
-        // 获取静态资源地址
-        const assetPublicPath = getPublicPath(url)
-        /**
-         * 从 html 模版中解析出外部脚本的地址或者内联脚本的代码块 和 link 标签的地址
-         * {
-         * 	template: 经过处理的脚本，link、script 标签都被注释掉了,
-         * 	scripts: [脚本的http地址 或者 { async: true, src: xx } 或者 代码块],
-         *  styles: [样式的http地址],
-         * 	entry: 入口脚本的地址，要不是标有 entry 的 script 的 src，要不就是最后一个 script 标签的 src
-         * }
-         */
-        const { template, scripts, entry, styles } = processTpl(getTemplate(html), assetPublicPath)
+  </details>
 
-        // getEmbedHTML 方法通过 fetch 远程加载所有的外部样式，然后将对应的 link 注释标签替换为 style，即外部样式替换为内联样式，然后返回 embedHTML，即处理过后的 HTML 模版
-        return getEmbedHTML(template, styles, { fetch }).then((embedHTML) => ({
+- <details>
+      <summary>importHTML</summary>
+      ```js
+      /**
+      * 加载指定地址的首屏内容
+      * @param {*} url 
+      * @param {*} opts 
+      * return Promise<{
           // template 是 link 替换为 style 后的 template
           template: embedHTML,
           // 静态资源地址
@@ -250,450 +197,516 @@ export default function importHTML(url, opts = {}) {
           // 脚本执行器，让 JS 代码(scripts)在指定 上下文 中运行
           execScripts: (proxy, strictGlobal) => {
             if (!scripts.length) {
-              return Promise.resolve()
+              return Promise.resolve();
             }
-            return execScripts(entry, scripts, proxy, { fetch, strictGlobal })
+            return execScripts(entry, scripts, proxy, { fetch, strictGlobal });
           },
-        }))
-      }))
-  )
-}
-```
+        }>
+      */
+      export default function importHTML(url, opts = {}) {
+        // 三个默认的方法
+        let fetch = defaultFetch
+        let getPublicPath = defaultGetPublicPath
+        let getTemplate = defaultGetTemplate
 
-#### processTpl
-
-```js
-/**
- * 从 html 模版中解析出外部脚本的地址或者内联脚本的代码块 和 link 标签的地址
- * @param tpl html 模版
- * @param baseURI
- * @stripStyles whether to strip the css links
- * @returns {{template: void | string | *, scripts: *[], entry: *}}
- * return {
- * 	template: 经过处理的脚本，link、script 标签都被注释掉了,
- * 	scripts: [脚本的http地址 或者 { async: true, src: xx } 或者 代码块],
- *  styles: [样式的http地址],
- * 	entry: 入口脚本的地址，要不是标有 entry 的 script 的 src，要不就是最后一个 script 标签的 src
- * }
- */
-export default function processTpl(tpl, baseURI) {
-  let scripts = []
-  const styles = []
-  let entry = null
-  // 判断浏览器是否支持 es module，<script type = "module" />
-  const moduleSupport = isModuleScriptSupported()
-
-  const template = tpl
-
-    // 移除 html 模版中的注释内容 <!-- xx -->
-    .replace(HTML_COMMENT_REGEX, '')
-
-    // 匹配 link 标签
-    .replace(LINK_TAG_REGEX, (match) => {
-      /**
-       * 将模版中的 link 标签变成注释，如果有存在 href 属性且非预加载的 link，则将地址存到 styles 数组，如果是预加载的 link 直接变成注释
-       */
-      // <link rel = "stylesheet" />
-      const styleType = !!match.match(STYLE_TYPE_REGEX)
-      if (styleType) {
-        // <link rel = "stylesheet" href = "xxx" />
-        const styleHref = match.match(STYLE_HREF_REGEX)
-        // <link rel = "stylesheet" ignore />
-        const styleIgnore = match.match(LINK_IGNORE_REGEX)
-
-        if (styleHref) {
-          // 获取 href 属性值
-          const href = styleHref && styleHref[2]
-          let newHref = href
-
-          // 如果 href 没有协议说明给的是一个相对地址，拼接 baseURI 得到完整地址
-          if (href && !hasProtocol(href)) {
-            newHref = getEntirePath(href, baseURI)
-          }
-          // 将 <link rel = "stylesheet" ignore /> 变成 <!-- ignore asset ${url} replaced by import-html-entry -->
-          if (styleIgnore) {
-            return genIgnoreAssetReplaceSymbol(newHref)
-          }
-
-          // 将 href 属性值存入 styles 数组
-          styles.push(newHref)
-          // <link rel = "stylesheet" href = "xxx" /> 变成 <!-- link ${linkHref} replaced by import-html-entry -->
-          return genLinkReplaceSymbol(newHref)
-        }
-      }
-
-      // 匹配 <link rel = "preload or prefetch" href = "xxx" />，表示预加载资源
-      const preloadOrPrefetchType =
-        match.match(LINK_PRELOAD_OR_PREFETCH_REGEX) &&
-        match.match(LINK_HREF_REGEX) &&
-        !match.match(LINK_AS_FONT)
-      if (preloadOrPrefetchType) {
-        // 得到 href 地址
-        const [, , linkHref] = match.match(LINK_HREF_REGEX)
-        // 将标签变成 <!-- prefetch/preload link ${linkHref} replaced by import-html-entry -->
-        return genLinkReplaceSymbol(linkHref, true)
-      }
-
-      return match
-    })
-    // 匹配 <style></style>
-    .replace(STYLE_TAG_REGEX, (match) => {
-      if (STYLE_IGNORE_REGEX.test(match)) {
-        // <style ignore></style> 变成 <!-- ignore asset style file replaced by import-html-entry -->
-        return genIgnoreAssetReplaceSymbol('style file')
-      }
-      return match
-    })
-    // 匹配 <script></script>
-    .replace(ALL_SCRIPT_REGEX, (match, scriptTag) => {
-      // 匹配 <script ignore></script>
-      const scriptIgnore = scriptTag.match(SCRIPT_IGNORE_REGEX)
-      // 匹配 <script nomodule></script> 或者 <script type = "module"></script>，都属于应该被忽略的脚本
-      const moduleScriptIgnore =
-        (moduleSupport && !!scriptTag.match(SCRIPT_NO_MODULE_REGEX)) ||
-        (!moduleSupport && !!scriptTag.match(SCRIPT_MODULE_REGEX))
-      // in order to keep the exec order of all javascripts
-
-      // <script type = "xx" />
-      const matchedScriptTypeMatch = scriptTag.match(SCRIPT_TYPE_REGEX)
-      // 获取 type 属性值
-      const matchedScriptType = matchedScriptTypeMatch && matchedScriptTypeMatch[2]
-      // 验证 type 是否有效，type 为空 或者 'text/javascript', 'module', 'application/javascript', 'text/ecmascript', 'application/ecmascript'，都视为有效
-      if (!isValidJavaScriptType(matchedScriptType)) {
-        return match
-      }
-
-      // if it is a external script，匹配非 <script type = "text/ng-template" src = "xxx"></script>
-      if (SCRIPT_TAG_REGEX.test(match) && scriptTag.match(SCRIPT_SRC_REGEX)) {
-        /*
-				collect scripts and replace the ref
-				*/
-
-        // <script entry />
-        const matchedScriptEntry = scriptTag.match(SCRIPT_ENTRY_REGEX)
-        // <script src = "xx" />
-        const matchedScriptSrcMatch = scriptTag.match(SCRIPT_SRC_REGEX)
-        // 脚本地址
-        let matchedScriptSrc = matchedScriptSrcMatch && matchedScriptSrcMatch[2]
-
-        if (entry && matchedScriptEntry) {
-          // 说明出现了两个入口地址，即两个 <script entry src = "xx" />
-          throw new SyntaxError('You should not set multiply entry script!')
+        if (typeof opts === 'function') {
+          // if 分支，兼容遗留的 importHTML api，ops 可以直接是一个 fetch 方法
+          fetch = opts
         } else {
-          // 补全脚本地址，地址如果没有协议，说明是一个相对路径，添加 baseURI
-          if (matchedScriptSrc && !hasProtocol(matchedScriptSrc)) {
-            matchedScriptSrc = getEntirePath(matchedScriptSrc, baseURI)
-          }
-
-          // 脚本的入口地址
-          entry = entry || (matchedScriptEntry && matchedScriptSrc)
+          // 用用户传递的参数（如果提供了的话）覆盖默认方法
+          fetch = opts.fetch || defaultFetch
+          getPublicPath = opts.getPublicPath || opts.getDomain || defaultGetPublicPath
+          getTemplate = opts.getTemplate || defaultGetTemplate
         }
 
-        if (scriptIgnore) {
-          // <script ignore></script> 替换为 <!-- ignore asset ${url || 'file'} replaced by import-html-entry -->
-          return genIgnoreAssetReplaceSymbol(matchedScriptSrc || 'js file')
-        }
-
-        if (moduleScriptIgnore) {
-          // <script nomodule></script> 或者 <script type = "module"></script> 替换为
-          // <!-- nomodule script ${scriptSrc} ignored by import-html-entry --> 或
-          // <!-- module script ${scriptSrc} ignored by import-html-entry -->
-          return genModuleScriptReplaceSymbol(matchedScriptSrc || 'js file', moduleSupport)
-        }
-
-        if (matchedScriptSrc) {
-          // 匹配 <script src = 'xx' async />，说明是异步加载的脚本
-          const asyncScript = !!scriptTag.match(SCRIPT_ASYNC_REGEX)
-          // 将脚本地址存入 scripts 数组，如果是异步加载，则存入一个对象 { async: true, src: xx }
-          scripts.push(asyncScript ? { async: true, src: matchedScriptSrc } : matchedScriptSrc)
-          // <script src = "xx" async /> 或者 <script src = "xx" /> 替换为
-          // <!-- async script ${scriptSrc} replaced by import-html-entry --> 或
-          // <!-- script ${scriptSrc} replaced by import-html-entry -->
-          return genScriptReplaceSymbol(matchedScriptSrc, asyncScript)
-        }
-
-        return match
-      } else {
-        // 说明是内部脚本，<script>xx</script>
-        if (scriptIgnore) {
-          // <script ignore /> 替换为 <!-- ignore asset js file replaced by import-html-entry -->
-          return genIgnoreAssetReplaceSymbol('js file')
-        }
-
-        if (moduleScriptIgnore) {
-          // <script nomodule></script> 或者 <script type = "module"></script> 替换为
-          // <!-- nomodule script ${scriptSrc} ignored by import-html-entry --> 或
-          // <!-- module script ${scriptSrc} ignored by import-html-entry -->
-          return genModuleScriptReplaceSymbol('js file', moduleSupport)
-        }
-
-        // if it is an inline script，<script>xx</script>，得到标签之间的代码 => xx
-        const code = getInlineCode(match)
-
-        // remove script blocks when all of these lines are comments. 判断代码块是否全是注释
-        const isPureCommentBlock = code
-          .split(/[\r\n]+/)
-          .every((line) => !line.trim() || line.trim().startsWith('//'))
-
-        if (!isPureCommentBlock) {
-          // 不是注释，则将代码块存入 scripts 数组
-          scripts.push(match)
-        }
-
-        // <script>xx</script> 替换为 <!-- inline scripts replaced by import-html-entry -->
-        return inlineScriptReplaceSymbol
-      }
-    })
-
-  // filter empty script
-  scripts = scripts.filter(function (script) {
-    return !!script
-  })
-
-  return {
-    template,
-    scripts,
-    styles,
-    // set the last script as entry if have not set
-    entry: entry || scripts[scripts.length - 1],
-  }
-}
-```
-
-#### getEmbedHTML
-
-```js
-/**
- * convert external css link to inline style for performance optimization，外部样式转换成内联样式
- * @param template，html 模版
- * @param styles link 样式链接
- * @param opts = { fetch }
- * @return embedHTML 处理过后的 html 模版
- */
-function getEmbedHTML(template, styles, opts = {}) {
-  const { fetch = defaultFetch } = opts
-  let embedHTML = template
-
-  return getExternalStyleSheets(styles, fetch).then((styleSheets) => {
-    // 通过循环，将之前设置的 link 注释标签替换为 style 标签，即 <style>/* href地址 */ xx </style>
-    embedHTML = styles.reduce((html, styleSrc, i) => {
-      html = html.replace(
-        genLinkReplaceSymbol(styleSrc),
-        `<style>/* ${styleSrc} */${styleSheets[i]}</style>`
-      )
-      return html
-    }, embedHTML)
-    return embedHTML
-  })
-}
-```
-
-#### getExternalScripts
-
-```js
-/**
- * 加载脚本，最终返回脚本的内容，Promise<Array>，每个元素都是一段 JS 代码
- * @param {*} scripts = [脚本http地址 or 内联脚本的脚本内容 or { async: true, src: xx }]
- * @param {*} fetch
- * @param {*} errorCallback
- */
-export function getExternalScripts(scripts, fetch = defaultFetch, errorCallback = () => {}) {
-  // 定义一个可以加载远程指定 url 脚本的方法，当然里面也做了缓存，如果命中缓存直接从缓存中获取
-  const fetchScript = (scriptUrl) =>
-    scriptCache[scriptUrl] ||
-    (scriptCache[scriptUrl] = fetch(scriptUrl).then((response) => {
-      // usually browser treats 4xx and 5xx response of script loading as an error and will fire a script error event
-      // https://stackoverflow.com/questions/5625420/what-http-headers-responses-trigger-the-onerror-handler-on-a-script-tag/5625603
-      if (response.status >= 400) {
-        errorCallback()
-        throw new Error(`${scriptUrl} load failed with status ${response.status}`)
-      }
-
-      return response.text()
-    }))
-
-  return Promise.all(
-    scripts.map((script) => {
-      if (typeof script === 'string') {
-        // 字符串，要不是链接地址，要不是脚本内容（代码）
-        if (isInlineCode(script)) {
-          // if it is inline script
-          return getInlineCode(script)
-        } else {
-          // external script，加载脚本
-          return fetchScript(script)
-        }
-      } else {
-        // use idle time to load async script
-        // 异步脚本，通过 requestIdleCallback 方法加载
-        const { src, async } = script
-        if (async) {
-          return {
-            src,
-            async: true,
-            content: new Promise((resolve, reject) =>
-              requestIdleCallback(() => fetchScript(src).then(resolve, reject))
-            ),
-          }
-        }
-
-        return fetchScript(src)
-      }
-    })
-  )
-}
-```
-
-#### getExternalStyleSheets
-
-```js
-/**
- * 通过 fetch 方法加载指定地址的样式文件
- * @param {*} styles = [ href ]
- * @param {*} fetch
- * return Promise<Array>，每个元素都是一堆样式内容
- */
-export function getExternalStyleSheets(styles, fetch = defaultFetch) {
-  return Promise.all(
-    styles.map((styleLink) => {
-      if (isInlineCode(styleLink)) {
-        // if it is inline style
-        return getInlineCode(styleLink)
-      } else {
-        // external styles，加载样式并缓存
+        // 通过 fetch 方法请求 url，这也就是 qiankun 为什么要求你的微应用要支持跨域的原因
         return (
-          styleCache[styleLink] ||
-          (styleCache[styleLink] = fetch(styleLink).then((response) => response.text()))
+          embedHTMLCache[url] ||
+          (embedHTMLCache[url] = fetch(url)
+            // response.text() 是一个 html 模版
+            .then((response) => response.text())
+            .then((html) => {
+              // 获取静态资源地址
+              const assetPublicPath = getPublicPath(url)
+              /**
+              * 从 html 模版中解析出外部脚本的地址或者内联脚本的代码块 和 link 标签的地址
+              * {
+              * 	template: 经过处理的脚本，link、script 标签都被注释掉了,
+              * 	scripts: [脚本的http地址 或者 { async: true, src: xx } 或者 代码块],
+              *  styles: [样式的http地址],
+              * 	entry: 入口脚本的地址，要不是标有 entry 的 script 的 src，要不就是最后一个 script 标签的 src
+              * }
+              */
+              const { template, scripts, entry, styles } = processTpl(getTemplate(html), assetPublicPath)
+
+              // getEmbedHTML 方法通过 fetch 远程加载所有的外部样式，然后将对应的 link 注释标签替换为 style，即外部样式替换为内联样式，然后返回 embedHTML，即处理过后的 HTML 模版
+              return getEmbedHTML(template, styles, { fetch }).then((embedHTML) => ({
+                // template 是 link 替换为 style 后的 template
+                template: embedHTML,
+                // 静态资源地址
+                assetPublicPath,
+                // 获取外部脚本，最终得到所有脚本的代码内容
+                getExternalScripts: () => getExternalScripts(scripts, fetch),
+                // 获取外部样式文件的内容
+                getExternalStyleSheets: () => getExternalStyleSheets(styles, fetch),
+                // 脚本执行器，让 JS 代码(scripts)在指定 上下文 中运行
+                execScripts: (proxy, strictGlobal) => {
+                  if (!scripts.length) {
+                    return Promise.resolve()
+                  }
+                  return execScripts(entry, scripts, proxy, { fetch, strictGlobal })
+                },
+              }))
+            }))
         )
       }
-    })
-  )
-}
-```
+      ```
 
-#### execScripts
+  </details>
 
-```js
-/**
- * FIXME to consistent with browser behavior, we should only provide callback way to invoke success and error event
- * 脚本执行器，让指定的脚本(scripts)在规定的上下文环境中执行
- * @param entry 入口地址
- * @param scripts = [脚本http地址 or 内联脚本的脚本内容 or { async: true, src: xx }]
- * @param proxy 脚本执行上下文，全局对象，qiankun JS 沙箱生成 windowProxy 就是传递到了这个参数
- * @param opts
- * @returns {Promise<unknown>}
- */
-export function execScripts(entry, scripts, proxy = window, opts = {}) {
-  const {
-    fetch = defaultFetch,
-    strictGlobal = false,
-    success,
-    error = () => {},
-    beforeExec = () => {},
-  } = opts
+- <details>
+      <summary>processTpl</summary>
+      ```js
+      /**
+      * 从 html 模版中解析出外部脚本的地址或者内联脚本的代码块 和 link 标签的地址
+      * @param tpl html 模版
+      * @param baseURI
+      * @stripStyles whether to strip the css links
+      * @returns {{template: void | string | *, scripts: *[], entry: *}}
+      * return {
+      * 	template: 经过处理的脚本，link、script 标签都被注释掉了,
+      * 	scripts: [脚本的http地址 或者 { async: true, src: xx } 或者 代码块],
+      *  styles: [样式的http地址],
+      * 	entry: 入口脚本的地址，要不是标有 entry 的 script 的 src，要不就是最后一个 script 标签的 src
+      * }
+      */
+      export default function processTpl(tpl, baseURI) {
+        let scripts = []
+        const styles = []
+        let entry = null
+        // 判断浏览器是否支持 es module，<script type = "module" />
+        const moduleSupport = isModuleScriptSupported()
 
-  // 获取指定的所有外部脚本的内容，并设置每个脚本的执行上下文，然后通过 eval 函数运行
-  return getExternalScripts(scripts, fetch, error).then((scriptsText) => {
-    // scriptsText 为脚本内容数组 => 每个元素是一段 JS 代码
-    const geval = (code) => {
-      beforeExec()
-      ;(0, eval)(code)
-    }
+        const template = tpl
 
-    /**
-     *
-     * @param {*} scriptSrc 脚本地址
-     * @param {*} inlineScript 脚本内容
-     * @param {*} resolve
-     */
-    function exec(scriptSrc, inlineScript, resolve) {
-      // 性能度量
-      const markName = `Evaluating script ${scriptSrc}`
-      const measureName = `Evaluating Time Consuming: ${scriptSrc}`
+          // 移除 html 模版中的注释内容 <!-- xx -->
+          .replace(HTML_COMMENT_REGEX, '')
 
-      if (process.env.NODE_ENV === 'development' && supportsUserTiming) {
-        performance.mark(markName)
-      }
+          // 匹配 link 标签
+          .replace(LINK_TAG_REGEX, (match) => {
+            /**
+            * 将模版中的 link 标签变成注释，如果有存在 href 属性且非预加载的 link，则将地址存到 styles 数组，如果是预加载的 link 直接变成注释
+            */
+            // <link rel = "stylesheet" />
+            const styleType = !!match.match(STYLE_TYPE_REGEX)
+            if (styleType) {
+              // <link rel = "stylesheet" href = "xxx" />
+              const styleHref = match.match(STYLE_HREF_REGEX)
+              // <link rel = "stylesheet" ignore />
+              const styleIgnore = match.match(LINK_IGNORE_REGEX)
 
-      if (scriptSrc === entry) {
-        // 入口
-        noteGlobalProps(strictGlobal ? proxy : window)
+              if (styleHref) {
+                // 获取 href 属性值
+                const href = styleHref && styleHref[2]
+                let newHref = href
 
-        try {
-          // bind window.proxy to change `this` reference in script
-          geval(getExecutableScript(scriptSrc, inlineScript, proxy, strictGlobal))
-          const exports = proxy[getGlobalProp(strictGlobal ? proxy : window)] || {}
-          resolve(exports)
-        } catch (e) {
-          // entry error must be thrown to make the promise settled
-          console.error(
-            `[import-html-entry]: error occurs while executing entry script ${scriptSrc}`
-          )
-          throw e
+                // 如果 href 没有协议说明给的是一个相对地址，拼接 baseURI 得到完整地址
+                if (href && !hasProtocol(href)) {
+                  newHref = getEntirePath(href, baseURI)
+                }
+                // 将 <link rel = "stylesheet" ignore /> 变成 <!-- ignore asset ${url} replaced by import-html-entry -->
+                if (styleIgnore) {
+                  return genIgnoreAssetReplaceSymbol(newHref)
+                }
+
+                // 将 href 属性值存入 styles 数组
+                styles.push(newHref)
+                // <link rel = "stylesheet" href = "xxx" /> 变成 <!-- link ${linkHref} replaced by import-html-entry -->
+                return genLinkReplaceSymbol(newHref)
+              }
+            }
+
+            // 匹配 <link rel = "preload or prefetch" href = "xxx" />，表示预加载资源
+            const preloadOrPrefetchType =
+              match.match(LINK_PRELOAD_OR_PREFETCH_REGEX) &&
+              match.match(LINK_HREF_REGEX) &&
+              !match.match(LINK_AS_FONT)
+            if (preloadOrPrefetchType) {
+              // 得到 href 地址
+              const [, , linkHref] = match.match(LINK_HREF_REGEX)
+              // 将标签变成 <!-- prefetch/preload link ${linkHref} replaced by import-html-entry -->
+              return genLinkReplaceSymbol(linkHref, true)
+            }
+
+            return match
+          })
+          // 匹配 <style></style>
+          .replace(STYLE_TAG_REGEX, (match) => {
+            if (STYLE_IGNORE_REGEX.test(match)) {
+              // <style ignore></style> 变成 <!-- ignore asset style file replaced by import-html-entry -->
+              return genIgnoreAssetReplaceSymbol('style file')
+            }
+            return match
+          })
+          // 匹配 <script></script>
+          .replace(ALL_SCRIPT_REGEX, (match, scriptTag) => {
+            // 匹配 <script ignore></script>
+            const scriptIgnore = scriptTag.match(SCRIPT_IGNORE_REGEX)
+            // 匹配 <script nomodule></script> 或者 <script type = "module"></script>，都属于应该被忽略的脚本
+            const moduleScriptIgnore =
+              (moduleSupport && !!scriptTag.match(SCRIPT_NO_MODULE_REGEX)) ||
+              (!moduleSupport && !!scriptTag.match(SCRIPT_MODULE_REGEX))
+            // in order to keep the exec order of all javascripts
+
+            // <script type = "xx" />
+            const matchedScriptTypeMatch = scriptTag.match(SCRIPT_TYPE_REGEX)
+            // 获取 type 属性值
+            const matchedScriptType = matchedScriptTypeMatch && matchedScriptTypeMatch[2]
+            // 验证 type 是否有效，type 为空 或者 'text/javascript', 'module', 'application/javascript', 'text/ecmascript', 'application/ecmascript'，都视为有效
+            if (!isValidJavaScriptType(matchedScriptType)) {
+              return match
+            }
+
+            // if it is a external script，匹配非 <script type = "text/ng-template" src = "xxx"></script>
+            if (SCRIPT_TAG_REGEX.test(match) && scriptTag.match(SCRIPT_SRC_REGEX)) {
+              /*
+              collect scripts and replace the ref
+              */
+
+              // <script entry />
+              const matchedScriptEntry = scriptTag.match(SCRIPT_ENTRY_REGEX)
+              // <script src = "xx" />
+              const matchedScriptSrcMatch = scriptTag.match(SCRIPT_SRC_REGEX)
+              // 脚本地址
+              let matchedScriptSrc = matchedScriptSrcMatch && matchedScriptSrcMatch[2]
+
+              if (entry && matchedScriptEntry) {
+                // 说明出现了两个入口地址，即两个 <script entry src = "xx" />
+                throw new SyntaxError('You should not set multiply entry script!')
+              } else {
+                // 补全脚本地址，地址如果没有协议，说明是一个相对路径，添加 baseURI
+                if (matchedScriptSrc && !hasProtocol(matchedScriptSrc)) {
+                  matchedScriptSrc = getEntirePath(matchedScriptSrc, baseURI)
+                }
+
+                // 脚本的入口地址
+                entry = entry || (matchedScriptEntry && matchedScriptSrc)
+              }
+
+              if (scriptIgnore) {
+                // <script ignore></script> 替换为 <!-- ignore asset ${url || 'file'} replaced by import-html-entry -->
+                return genIgnoreAssetReplaceSymbol(matchedScriptSrc || 'js file')
+              }
+
+              if (moduleScriptIgnore) {
+                // <script nomodule></script> 或者 <script type = "module"></script> 替换为
+                // <!-- nomodule script ${scriptSrc} ignored by import-html-entry --> 或
+                // <!-- module script ${scriptSrc} ignored by import-html-entry -->
+                return genModuleScriptReplaceSymbol(matchedScriptSrc || 'js file', moduleSupport)
+              }
+
+              if (matchedScriptSrc) {
+                // 匹配 <script src = 'xx' async />，说明是异步加载的脚本
+                const asyncScript = !!scriptTag.match(SCRIPT_ASYNC_REGEX)
+                // 将脚本地址存入 scripts 数组，如果是异步加载，则存入一个对象 { async: true, src: xx }
+                scripts.push(asyncScript ? { async: true, src: matchedScriptSrc } : matchedScriptSrc)
+                // <script src = "xx" async /> 或者 <script src = "xx" /> 替换为
+                // <!-- async script ${scriptSrc} replaced by import-html-entry --> 或
+                // <!-- script ${scriptSrc} replaced by import-html-entry -->
+                return genScriptReplaceSymbol(matchedScriptSrc, asyncScript)
+              }
+
+              return match
+            } else {
+              // 说明是内部脚本，<script>xx</script>
+              if (scriptIgnore) {
+                // <script ignore /> 替换为 <!-- ignore asset js file replaced by import-html-entry -->
+                return genIgnoreAssetReplaceSymbol('js file')
+              }
+
+              if (moduleScriptIgnore) {
+                // <script nomodule></script> 或者 <script type = "module"></script> 替换为
+                // <!-- nomodule script ${scriptSrc} ignored by import-html-entry --> 或
+                // <!-- module script ${scriptSrc} ignored by import-html-entry -->
+                return genModuleScriptReplaceSymbol('js file', moduleSupport)
+              }
+
+              // if it is an inline script，<script>xx</script>，得到标签之间的代码 => xx
+              const code = getInlineCode(match)
+
+              // remove script blocks when all of these lines are comments. 判断代码块是否全是注释
+              const isPureCommentBlock = code
+                .split(/[\r\n]+/)
+                .every((line) => !line.trim() || line.trim().startsWith('//'))
+
+              if (!isPureCommentBlock) {
+                // 不是注释，则将代码块存入 scripts 数组
+                scripts.push(match)
+              }
+
+              // <script>xx</script> 替换为 <!-- inline scripts replaced by import-html-entry -->
+              return inlineScriptReplaceSymbol
+            }
+          })
+
+        // filter empty script
+        scripts = scripts.filter(function (script) {
+          return !!script
+        })
+
+        return {
+          template,
+          scripts,
+          styles,
+          // set the last script as entry if have not set
+          entry: entry || scripts[scripts.length - 1],
         }
-      } else {
-        if (typeof inlineScript === 'string') {
-          try {
-            // bind window.proxy to change `this` reference in script，就是设置 JS 代码的执行上下文，然后通过 eval 函数运行运行代码
-            geval(getExecutableScript(scriptSrc, inlineScript, proxy, strictGlobal))
-          } catch (e) {
-            // consistent with browser behavior, any independent script evaluation error should not block the others
-            throwNonBlockingError(
-              e,
-              `[import-html-entry]: error occurs while executing normal script ${scriptSrc}`
+      }
+      ```
+
+  </details>
+
+- <details>
+      <summary>getEmbedHTML</summary>
+      ```js
+      /**
+      * convert external css link to inline style for performance optimization，外部样式转换成内联样式
+      * @param template，html 模版
+      * @param styles link 样式链接
+      * @param opts = { fetch }
+      * @return embedHTML 处理过后的 html 模版
+      */
+      function getEmbedHTML(template, styles, opts = {}) {
+        const { fetch = defaultFetch } = opts
+        let embedHTML = template
+
+        return getExternalStyleSheets(styles, fetch).then((styleSheets) => {
+          // 通过循环，将之前设置的 link 注释标签替换为 style 标签，即 <style>/* href地址 */ xx </style>
+          embedHTML = styles.reduce((html, styleSrc, i) => {
+            html = html.replace(
+              genLinkReplaceSymbol(styleSrc),
+              `<style>/* ${styleSrc} */${styleSheets[i]}</style>`
             )
-          }
-        } else {
-          // external script marked with async，异步加载的代码，下载完以后运行
-          inlineScript.async &&
-            inlineScript?.content
-              .then((downloadedScriptText) =>
-                geval(
-                  getExecutableScript(inlineScript.src, downloadedScriptText, proxy, strictGlobal)
-                )
+            return html
+          }, embedHTML)
+          return embedHTML
+        })
+      }
+      ```
+
+  </details>
+
+- <details>
+      <summary>getExternalScripts</summary>
+      ```js
+      /**
+      * 加载脚本，最终返回脚本的内容，Promise<Array>，每个元素都是一段 JS 代码
+      * @param {*} scripts = [脚本http地址 or 内联脚本的脚本内容 or { async: true, src: xx }]
+      * @param {*} fetch
+      * @param {*} errorCallback
+      */
+      export function getExternalScripts(scripts, fetch = defaultFetch, errorCallback = () => {}) {
+        // 定义一个可以加载远程指定 url 脚本的方法，当然里面也做了缓存，如果命中缓存直接从缓存中获取
+        const fetchScript = (scriptUrl) =>
+          scriptCache[scriptUrl] ||
+          (scriptCache[scriptUrl] = fetch(scriptUrl).then((response) => {
+            // usually browser treats 4xx and 5xx response of script loading as an error and will fire a script error event
+            // https://stackoverflow.com/questions/5625420/what-http-headers-responses-trigger-the-onerror-handler-on-a-script-tag/5625603
+            if (response.status >= 400) {
+              errorCallback()
+              throw new Error(`${scriptUrl} load failed with status ${response.status}`)
+            }
+
+            return response.text()
+          }))
+
+        return Promise.all(
+          scripts.map((script) => {
+            if (typeof script === 'string') {
+              // 字符串，要不是链接地址，要不是脚本内容（代码）
+              if (isInlineCode(script)) {
+                // if it is inline script
+                return getInlineCode(script)
+              } else {
+                // external script，加载脚本
+                return fetchScript(script)
+              }
+            } else {
+              // use idle time to load async script
+              // 异步脚本，通过 requestIdleCallback 方法加载
+              const { src, async } = script
+              if (async) {
+                return {
+                  src,
+                  async: true,
+                  content: new Promise((resolve, reject) =>
+                    requestIdleCallback(() => fetchScript(src).then(resolve, reject))
+                  ),
+                }
+              }
+
+              return fetchScript(src)
+            }
+          })
+        )
+      }
+      ```
+
+  </details>
+
+- <details>
+      <summary>getExternalStyleSheets</summary>
+      ```js
+      /**
+      * 通过 fetch 方法加载指定地址的样式文件
+      * @param {*} styles = [ href ]
+      * @param {*} fetch
+      * return Promise<Array>，每个元素都是一堆样式内容
+      */
+      export function getExternalStyleSheets(styles, fetch = defaultFetch) {
+        return Promise.all(
+          styles.map((styleLink) => {
+            if (isInlineCode(styleLink)) {
+              // if it is inline style
+              return getInlineCode(styleLink)
+            } else {
+              // external styles，加载样式并缓存
+              return (
+                styleCache[styleLink] ||
+                (styleCache[styleLink] = fetch(styleLink).then((response) => response.text()))
               )
-              .catch((e) => {
-                throwNonBlockingError(
-                  e,
-                  `[import-html-entry]: error occurs while executing async script ${inlineScript.src}`
+            }
+          })
+        )
+      }
+      ```
+  </details>
+
+- <details>
+      <summary>execScripts</summary>
+      ```js
+      /**
+      * FIXME to consistent with browser behavior, we should only provide callback way to invoke success and error event
+      * 脚本执行器，让指定的脚本(scripts)在规定的上下文环境中执行
+      * @param entry 入口地址
+      * @param scripts = [脚本http地址 or 内联脚本的脚本内容 or { async: true, src: xx }]
+      * @param proxy 脚本执行上下文，全局对象，qiankun JS 沙箱生成 windowProxy 就是传递到了这个参数
+      * @param opts
+      * @returns {Promise<unknown>}
+      */
+      export function execScripts(entry, scripts, proxy = window, opts = {}) {
+        const {
+          fetch = defaultFetch,
+          strictGlobal = false,
+          success,
+          error = () => {},
+          beforeExec = () => {},
+        } = opts
+
+        // 获取指定的所有外部脚本的内容，并设置每个脚本的执行上下文，然后通过 eval 函数运行
+        return getExternalScripts(scripts, fetch, error).then((scriptsText) => {
+          // scriptsText 为脚本内容数组 => 每个元素是一段 JS 代码
+          const geval = (code) => {
+            beforeExec()
+            ;(0, eval)(code)
+          }
+
+          /**
+          *
+          * @param {*} scriptSrc 脚本地址
+          * @param {*} inlineScript 脚本内容
+          * @param {*} resolve
+          */
+          function exec(scriptSrc, inlineScript, resolve) {
+            // 性能度量
+            const markName = `Evaluating script ${scriptSrc}`
+            const measureName = `Evaluating Time Consuming: ${scriptSrc}`
+
+            if (process.env.NODE_ENV === 'development' && supportsUserTiming) {
+              performance.mark(markName)
+            }
+
+            if (scriptSrc === entry) {
+              // 入口
+              noteGlobalProps(strictGlobal ? proxy : window)
+
+              try {
+                // bind window.proxy to change `this` reference in script
+                geval(getExecutableScript(scriptSrc, inlineScript, proxy, strictGlobal))
+                const exports = proxy[getGlobalProp(strictGlobal ? proxy : window)] || {}
+                resolve(exports)
+              } catch (e) {
+                // entry error must be thrown to make the promise settled
+                console.error(
+                  `[import-html-entry]: error occurs while executing entry script ${scriptSrc}`
                 )
-              })
-        }
+                throw e
+              }
+            } else {
+              if (typeof inlineScript === 'string') {
+                try {
+                  // bind window.proxy to change `this` reference in script，就是设置 JS 代码的执行上下文，然后通过 eval 函数运行运行代码
+                  geval(getExecutableScript(scriptSrc, inlineScript, proxy, strictGlobal))
+                } catch (e) {
+                  // consistent with browser behavior, any independent script evaluation error should not block the others
+                  throwNonBlockingError(
+                    e,
+                    `[import-html-entry]: error occurs while executing normal script ${scriptSrc}`
+                  )
+                }
+              } else {
+                // external script marked with async，异步加载的代码，下载完以后运行
+                inlineScript.async &&
+                  inlineScript?.content
+                    .then((downloadedScriptText) =>
+                      geval(
+                        getExecutableScript(inlineScript.src, downloadedScriptText, proxy, strictGlobal)
+                      )
+                    )
+                    .catch((e) => {
+                      throwNonBlockingError(
+                        e,
+                        `[import-html-entry]: error occurs while executing async script ${inlineScript.src}`
+                      )
+                    })
+              }
+            }
+
+            // 性能度量
+            if (process.env.NODE_ENV === 'development' && supportsUserTiming) {
+              performance.measure(measureName, markName)
+              performance.clearMarks(markName)
+              performance.clearMeasures(measureName)
+            }
+          }
+
+          /**
+          * 递归
+          * @param {*} i 表示第几个脚本
+          * @param {*} resolvePromise 成功回调
+          */
+          function schedule(i, resolvePromise) {
+            if (i < scripts.length) {
+              // 第 i 个脚本的地址
+              const scriptSrc = scripts[i]
+              // 第 i 个脚本的内容
+              const inlineScript = scriptsText[i]
+
+              exec(scriptSrc, inlineScript, resolvePromise)
+              if (!entry && i === scripts.length - 1) {
+                // resolve the promise while the last script executed and entry not provided
+                resolvePromise()
+              } else {
+                // 递归调用下一个脚本
+                schedule(i + 1, resolvePromise)
+              }
+            }
+          }
+
+          // 从第 0 个脚本开始调度
+          return new Promise((resolve) => schedule(0, success || resolve))
+        })
       }
+      ```
 
-      // 性能度量
-      if (process.env.NODE_ENV === 'development' && supportsUserTiming) {
-        performance.measure(measureName, markName)
-        performance.clearMarks(markName)
-        performance.clearMeasures(measureName)
-      }
-    }
-
-    /**
-     * 递归
-     * @param {*} i 表示第几个脚本
-     * @param {*} resolvePromise 成功回调
-     */
-    function schedule(i, resolvePromise) {
-      if (i < scripts.length) {
-        // 第 i 个脚本的地址
-        const scriptSrc = scripts[i]
-        // 第 i 个脚本的内容
-        const inlineScript = scriptsText[i]
-
-        exec(scriptSrc, inlineScript, resolvePromise)
-        if (!entry && i === scripts.length - 1) {
-          // resolve the promise while the last script executed and entry not provided
-          resolvePromise()
-        } else {
-          // 递归调用下一个脚本
-          schedule(i + 1, resolvePromise)
-        }
-      }
-    }
-
-    // 从第 0 个脚本开始调度
-    return new Promise((resolve) => schedule(0, success || resolve))
-  })
-}
-```
+  </details>

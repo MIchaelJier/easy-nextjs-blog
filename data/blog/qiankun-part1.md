@@ -857,16 +857,15 @@ console.log('window:window.city:', window.city) // window:window.city: undefined
       }
       ```
     </details>
-  源码里面有一个uniq方法，我单独放在下面。filter的第1个参数是一个函数，第二个参数是一个对象。具体参数的含义可以查阅相关文档。这里之所以提出来，就是里面巧妙的运用了这个this。通过在this上设置属性，并以之为条件来实现去重功能。另外关于这个this，会发现function filter(this: PropertyKey[], element) 第一个参数是this，正常在javascript这是会运行出错的，其实出现在这里仅仅是typescript用作类型推断，编译后应该是没有这个参数的，所以我们可以认为这里的第一个参数就是element，我在第一次阅读到这里的时候因为对这个typescript的小语法点不清楚，疑惑了好一会查文档才搞清楚。
-
-```js
-/**
- * fastest(at most time) unique array method
- * @see https://jsperf.com/array-filter-unique/30
- */
- function uniq(array: Array<string | symbol>) {
-    return array.filter(function filter(this: PropertyKey[], element) {
-      return element in this ? false : ((this as any)[element] = true);
-    }, Object.create(null));
-}
-```
+  - 源码里面有一个uniq方法，我单独放在下面。filter的第1个参数是一个函数，第二个参数是一个对象。具体参数的含义可以查阅相关文档。这里之所以提出来，就是里面巧妙的运用了这个this。通过在this上设置属性，并以之为条件来实现去重功能。另外关于这个this，会发现function filter(this: PropertyKey[], element) 第一个参数是this，正常在javascript这是会运行出错的，其实出现在这里仅仅是typescript用作类型推断，编译后应该是没有这个参数的，所以我们可以认为这里的第一个参数就是element，我在第一次阅读到这里的时候因为对这个typescript的小语法点不清楚，疑惑了好一会查文档才搞清楚。
+    ```js
+    /**
+     * fastest(at most time) unique array method
+    * @see https://jsperf.com/array-filter-unique/30
+    */
+    function uniq(array: Array<string | symbol>) {
+        return array.filter(function filter(this: PropertyKey[], element) {
+          return element in this ? false : ((this as any)[element] = true);
+        }, Object.create(null));
+    }
+    ```
