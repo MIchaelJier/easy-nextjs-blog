@@ -27,3 +27,7 @@ input:-webkit-autofill:focus {
 .transition-in > span {
   opacity: 1;
 }
+
+iframe {
+  width: 100%;
+}
