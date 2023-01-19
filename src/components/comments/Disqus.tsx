@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import siteMetadata from '@/data/siteMetadata'
 import { PostFrontMatter } from 'types/PostFrontMatter'
-
+import Observer from '@researchgate/react-intersection-observer'
 interface Props {
   frontMatter: PostFrontMatter
 }
@@ -36,10 +36,16 @@ const Disqus = ({ frontMatter }: Props) => {
   }
 
   return (
-    <div className="pt-6 pb-6 text-center text-gray-700 dark:text-gray-300">
-      {enableLoadComments && <button onClick={LoadComments}>加载评论</button>}
-      <div className="disqus-frame" id={COMMENTS_ID} />
-    </div>
+    <Observer
+      onChange={({ isIntersecting }) => {
+        isIntersecting && enableLoadComments && LoadComments()
+      }}
+    >
+      <div className="pt-6 pb-6 text-center text-gray-700 dark:text-gray-300">
+        {enableLoadComments && <button onClick={LoadComments}>加载评论</button>}
+        <div className="disqus-frame" id={COMMENTS_ID} />
+      </div>
+    </Observer>
   )
 }
 

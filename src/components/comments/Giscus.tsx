@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useTheme } from 'next-themes'
-
+import Observer from '@researchgate/react-intersection-observer'
 import siteMetadata from '@/data/siteMetadata'
 
 interface Props {
@@ -25,6 +25,7 @@ const Giscus = ({ mapping }: Props) => {
     script.src = 'https://giscus.app/client.js'
     script.setAttribute('data-repo', siteMetadata.comment.giscusConfig.repo)
     script.setAttribute('data-repo-id', siteMetadata.comment.giscusConfig.repositoryId)
+    script.setAttribute('data-lang', siteMetadata.comment.giscusConfig.lang)
     script.setAttribute('data-category', siteMetadata.comment.giscusConfig.category)
     script.setAttribute('data-category-id', siteMetadata.comment.giscusConfig.categoryId)
     script.setAttribute('data-mapping', mapping)
@@ -51,10 +52,16 @@ const Giscus = ({ mapping }: Props) => {
   }, [LoadComments])
 
   return (
-    <div className="pt-6 pb-6 text-center text-gray-700 dark:text-gray-300">
-      {enableLoadComments && <button onClick={LoadComments}>加载评论</button>}
-      <div className="giscus" id={COMMENTS_ID} />
-    </div>
+    <Observer
+      onChange={({ isIntersecting }) => {
+        isIntersecting && enableLoadComments && LoadComments()
+      }}
+    >
+      <div className="pt-6 pb-6 text-center text-gray-700 dark:text-gray-300">
+        {enableLoadComments && <button onClick={LoadComments}>加载评论</button>}
+        <div className="giscus" id={COMMENTS_ID} />
+      </div>
+    </Observer>
   )
 }
 

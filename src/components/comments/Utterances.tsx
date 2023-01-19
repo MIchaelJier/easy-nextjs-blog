@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useTheme } from 'next-themes'
-
+import Observer from '@researchgate/react-intersection-observer'
 import siteMetadata from '@/data/siteMetadata'
 
 interface Props {
@@ -46,10 +46,16 @@ const Utterances = ({ issueTerm }: Props) => {
 
   // Added `relative` to fix a weird bug with `utterances-frame` position
   return (
-    <div className="pt-6 pb-6 text-center text-gray-700 dark:text-gray-300">
-      {enableLoadComments && <button onClick={LoadComments}>加载评论</button>}
-      <div className="utterances-frame relative" id={COMMENTS_ID} />
-    </div>
+    <Observer
+      onChange={({ isIntersecting }) => {
+        isIntersecting && enableLoadComments && LoadComments()
+      }}
+    >
+      <div className="pt-6 pb-6 text-center text-gray-700 dark:text-gray-300">
+        {enableLoadComments && <button onClick={LoadComments}>加载评论</button>}
+        <div className="utterances-frame relative" id={COMMENTS_ID} />
+      </div>
+    </Observer>
   )
 }
 
