@@ -1,7 +1,7 @@
 ---
-title: '深入 tailwindcss'
+title: '深入浅出 tailwindcss'
 date: '2023/01/09'
-lastmod: '2023/01/09'
+lastmod: '2023/02/11'
 tags: [tailwindcss, css]
 draft: false
 summary: 'Tailwind CSS的工作原理是扫描所有HTML文件、JavaScript组件和任何其他模板的类名，生成相应的样式，然后将它们写入静态CSS文件'
@@ -9,7 +9,6 @@ images: ['/static/images/16350881224248.jpg']
 layout: PostLayout
 ---
 
-核心特点：**功能类优先（utility-first）**  
 Tailwind CSS 的工作原理是扫描所有 HTML 文件、JavaScript 组件和任何其他模板的类名，生成相应的样式，然后将它们写入静态 CSS 文件。
 
 本质上讲 TaiWindCss 是一个 postCss 的插件，首先我们需要了解一下 postcss
@@ -103,9 +102,11 @@ this.root = {
 
 从上述内容，我们基本上就了解 TaiWindCss 的实现基本原理了。其实就是一个对数据流的一系列操作过程，得到最终我们想要的 CSS 模块，然后再剔除掉多余的代码，转换成我们想要的 CSS 文件。
 
-## 特点
+## 核心概念
 
-### 按需配置打包
+![](//www.michaeljier.cn/m-picture/diving-into-tailwindcss/core-concepts.png)
+
+## 按需配置打包
 
 Tailwind 的 [purge](https://purgecss.com/) 选项来进行 tree-shake 来减少你最终构建项目的大小；
 PurgeCSS 会查找 HTML 中的 classes。它不会尝试解析你的 HTML，寻找类属性或者动态执行你的 JavaScript，它只是在整个文件中寻找任何与这个正则表达式匹配的字符串；
@@ -124,11 +125,11 @@ module.exports = {
 }
 ```
 
-### Just-in-Time(JIT)引擎
+## Just-in-Time(JIT)引擎
 
 TailwindCSS v3，AOT 引擎 => JIT
 
-#### JIT 的优势
+### JIT 的优势
 
 1. **超快速的编译时间。** 原本 Tailwind CLI 编译需要 3-8 秒，在 JIT 模式 下仅需 0.8 秒 。
 2. **直接使用任意 Variants 。** 不用再烦恼需不需要开 active 、 focus 或 disabled 等。
@@ -136,7 +137,7 @@ TailwindCSS v3，AOT 引擎 => JIT
 4. **在 develop 和 production 产生一样的 CSS 。** 不需要烦恼上线后会不会有 class 灵异的消失~
 5. **在开发时有更好的浏览器效能 。** 因为 develop 和 production 的 CSS 大小一样小，本地预览时不会出现 10-20 MB 的 CSS，开启相关开发工具也不会载入很久。
 
-#### JIT 模式的限制
+### JIT 模式的限制
 
 1. Tailwind CSS 是静态提取 class 的，写 class 务必要写完整，不然 Tailwind CSS 会无法正确的打包 CSS
    ❌ 这样是不行

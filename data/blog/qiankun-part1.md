@@ -1,7 +1,7 @@
 ---
 title: 'Qiankun的隔离策略'
 date: '2022/1/1'
-lastmod: '2022/3/10'
+lastmod: '2023/02/11'
 tags: [Qiankun, 微前端]
 draft: false
 summary: '对于giankun来说，路由劫持是在single-spa上去做的，而giankun给我们提供的能力，主要便是子应用的加载和沙箱隔离。而资源隔离又分为Js资源隔离和css资源隔离。'
@@ -12,9 +12,6 @@ layout: PostLayout
 ## 应用间运行时隔离
 
 对于 qiankun 来说，路由劫持是在 single-spa 上去做的，而 qiankun 给我们提供的能力，主要便是子应用的加载和沙箱隔离。
-
-> [参考 1：css 样式隔离和 js 沙箱](https://juejin.cn/post/6896643767353212935#heading-4)  
-> [参考 2：js 沙箱，Web Worker](https://mp.weixin.qq.com/s/VRERMga1noJJVZJdvl7n3Q)
 
 ### css 样式隔离
 
@@ -72,7 +69,7 @@ qiankun 为我们提供了两种方法：
 - CSS-Modules 打包时生成不冲突的选择器名
 - postcss 加前缀
 - css-in-js（tailwindcss 等)
-  > ❗️ 这里不推荐使用 styled-components，由于 sc 的实现方式，会导致非第一次加载同一个子应用时（比如切换了子应用或者在主应用和子应用间切换），会随机性产生丢失 cssom 的样式
+  > ❗️ 这里不推荐使用 styled-components，由于 sc 的实现方式，会导致非第一次加载同一个子应用时（比如切换了子应用或者在主应用和子应用间切换），会随机性产生丢失 cssom 的样式 ———— [从标签模板到 styled-components/styled-components 和 qiankun](/blog/styled-components-all-in-one#styled-components和-qiankun)
 
 ### js 沙箱
 
@@ -869,3 +866,8 @@ console.log('window:window.city:', window.city) // window:window.city: undefined
         }, Object.create(null));
     }
     ```
+
+## 参考
+
+> [css 样式隔离和 js 沙箱](https://juejin.cn/post/6896643767353212935#heading-4)  
+> [js 沙箱，Web Worker](https://mp.weixin.qq.com/s/VRERMga1noJJVZJdvl7n3Q)
