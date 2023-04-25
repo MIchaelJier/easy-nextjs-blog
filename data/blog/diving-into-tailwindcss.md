@@ -9,9 +9,9 @@ images: ['/static/images/16350881224248.jpg']
 layout: PostLayout
 ---
 
-Tailwind CSS 的工作原理是扫描所有 HTML 文件、JavaScript 组件和任何其他模板的类名，生成相应的样式，然后将它们写入静态 CSS 文件。
+TailwindCSS 的工作原理是扫描所有 HTML 文件、JavaScript 组件和任何其他模板的类名，生成相应的样式，然后将它们写入静态 CSS 文件。
 
-本质上讲 TaiWindCss 是一个 postCss 的插件，首先我们需要了解一下 postcss
+本质上讲 TailwindCSS 是一个 postCss 的插件，首先我们需要了解一下 postcss
 
 ## postCSS
 
@@ -37,7 +37,9 @@ CSS => Parse => Plugin 1 => Plugin 2 => ... => Stringifier => New CSS
 
 ### 关键的处理机制
 
-> Source string → Tokenizer → Parser → AST → Processor → Stringifier
+```js
+Source string => Tokenizer => Parser  => AST => Processor => Stringifier
+```
 
 #### Tokenizer
 
@@ -127,7 +129,9 @@ module.exports = {
 
 ## Just-in-Time(JIT)引擎
 
-TailwindCSS v3，AOT 引擎 => JIT
+在 TailwindCSS v3 版本中有一个重大更新，就是把 AOT 正式替换成了 JIT
+
+其实我们在搭建 tailwind 的项目过程中就可以发现，在 TailwindCSS 存在于 JIT 引擎（Just-In-Time），就是在编译过程才去扫描我们的 html 文件，在这个过程中去识别使用了哪些类名，然后才生成对应的样式。 相比于预先直接全局写好大量的类名，JIT 机制的优点在于精简紧凑，样式所占用的空间较小，因为用到了才会生成。
 
 ### JIT 的优势
 
@@ -155,7 +159,7 @@ TailwindCSS v3，AOT 引擎 => JIT
 ### build
 
  <details>
-    <summary>scripts/build.js: <br/>读取项目中的css文件，经过postcss插件tailwindcss进行转换的css文件。然后到处Css文件</summary>
+    <summary>scripts/build.js: <br/>读取项目中的css文件，经过postcss插件TailwindCSS进行转换的css文件。然后到处Css文件</summary>
     ```js
     import tailwind from '..'
     function buildDistFile(filename, config = {}, outFilename = filename) {
