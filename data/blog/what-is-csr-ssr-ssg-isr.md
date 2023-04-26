@@ -1,7 +1,7 @@
 ---
 title: 'What is CSR, SSR, SSG, ISR'
 date: '2023/04/25'
-lastmod: '2023/04/25'
+lastmod: '2023/04/27'
 tags: [nextjs, ssr]
 draft: false
 summary: 'React 生态中，SSR 支持做得最好的可能是 Next.js，但 SSR 并不是Next.js的全部，只是其提供的预渲染支持之一。Next.js 还提供了 SSG、ISR、Streaming 的渲染方式，本文就从渲染方式方面来讲解，让我们可以更好地理解 Next.js。'
@@ -324,7 +324,7 @@ export const dynamicParams = true
 
   - 边缘渲染（ESR）。严格来说是站点的部署形态，使用了新一代的 CDN 技术和 Serverless，让动态网站也能够在边缘渲染，让用户享受到更佳的体验。
 
-- 岛屿架构（Islands Architecture）。隔离交互组件，[astro](https://astro.build/)框架首打的特性。
+- 岛屿架构（Islands Architecture）。隔离交互组件，[astro](https://astro.build/)框架首打的特性。可以从我的另外一篇文章了解一下：[从 Astro 认识岛屿架构](/blog/islands-architecture)。
 - 无注水（No hydration）。最快的注水，就是无注水 😄。这就是[qwik](https://qwik.builder.io/)框架的主要卖点。
 - RSC（React Server component）。借助于 fiber 架构，React 能够打断传统递归式的注水，让网页拥有流式渲染的能力。
 
