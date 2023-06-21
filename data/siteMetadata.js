@@ -1,11 +1,12 @@
 const siteMetadata = {
-  title: 'Michael的博客',
+  title: '学习记录 - Michael的博客',
   author: 'Michael',
   headerTitle: 'Michael的博客',
-  description: 'day day up',
+  description:
+    'Explore the blog for the latest insights on web technologies, coding tips, and in-depth framework tutorials.',
   language: 'en-us',
   theme: 'system', // system, dark or light
-  siteUrl: 'http://www.yingjiechen.cn',
+  siteUrl: 'http://www.michaeljier.cn',
   siteRepo: 'https://github.com/MIchaelJier/easy-next-blog',
   siteLogo: '/static/images/logo.png',
   image: '/static/images/avatar.png',
