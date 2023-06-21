@@ -1,5 +1,5 @@
 const siteMetadata = {
-  title: 'Michael的博客',
+  title: '学习记录',
   author: 'Michael',
   headerTitle: 'Michael的博客',
   description: 'day day up',
