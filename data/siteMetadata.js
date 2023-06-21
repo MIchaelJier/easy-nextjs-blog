@@ -14,7 +14,7 @@ const siteMetadata = {
   github: 'https://github.com/MIchaelJier',
   juejin: 'https://juejin.cn/user/835284569426029',
   locale: 'zh-CN',
-  welcome: 'never stop exploring',
+  welcome: 'NEVER STOP EXPLORING',
   analytics: {
     //如果要使用分析提供程序，则必须将其添加到。
     //`next.config.js`文件中的内容安全策略。
