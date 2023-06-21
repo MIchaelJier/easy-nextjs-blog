@@ -257,9 +257,9 @@ export const dynamicParams = true
 1. 关键性的页面（如网站首页、热点数据等）预渲染为静态页面，缓存至 CDN，保证最佳的访问性能；
 2. 非关键性的页面（如流量很少的老旧内容）先响应兜底页面，可以是 CSR，也可以是 SSR；同时对页面进行异步预渲染，之后缓存至 CDN，提升后续用户访问的性能。
 
-![](//www.michaeljier.cn/m-picture/what-is-csr-ssr-ssg-isr/isr.jpeg)
+![](/m-picture/what-is-csr-ssr-ssg-isr/isr.jpeg)
 页面的更新遵循 stale-while-revalidate 的逻辑，即始终返回 CDN 的缓存数据（无论是否过期）；如果数据已经过期，那么触发异步的预渲染，异步更新 CDN 的缓存。
-![](//www.michaeljier.cn/m-picture/what-is-csr-ssr-ssg-isr/nextjs-isr.jpeg)
+![](/m-picture/what-is-csr-ssr-ssg-isr/nextjs-isr.jpeg)
 
 #### 缺点
 
@@ -287,7 +287,7 @@ export const dynamicParams = true
     2. 数据页面过期时，不再响应过期的缓存页面，而是 CDN 回源到 Builder 上，渲染出最新的数据；
     3. 每次发布新版本时，自动清除 CDN 的缓存数据。
 
-    ![](//www.michaeljier.cn/m-picture/what-is-csr-ssr-ssg-isr/dpr.jpeg)
+    ![](/m-picture/what-is-csr-ssr-ssg-isr/dpr.jpeg)
 
     在 Netlify 平台上，你可以像这样定义一个 Builder，用于预渲染或者实时渲染。这个 Builder 将会以 Serverless 云函数的方式在平台上运行：
 
@@ -365,7 +365,7 @@ Server component 是 React18 提供的能力， 与上面的 SSR 不同，相当
 
 </details>
 
-![](//www.michaeljier.cn/m-picture/what-is-csr-ssr-ssg-isr/nextjs12-blog.png)
+![](/m-picture/what-is-csr-ssr-ssg-isr/nextjs12-blog.png)
 
 如果评论接口返回较慢，那么整个程序就是待响应状态。
 
@@ -419,7 +419,7 @@ Server component 是 React18 提供的能力， 与上面的 SSR 不同，相当
 
 整个渲染流程如下图:
 
-![](//www.michaeljier.cn/m-picture/what-is-csr-ssr-ssg-isr/rsc-blog.png)
+![](/m-picture/what-is-csr-ssr-ssg-isr/rsc-blog.png)
 
 - 灰色部分代表 HTML 字符串返回
 - loading 状态表示当前部分还在请求

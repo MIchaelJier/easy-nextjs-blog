@@ -14,7 +14,7 @@ layout: PostLayout
 > [参考：基于 qiankun 的微前端最佳实践（图文并茂） - 应用间通信篇](https://juejin.cn/post/6844904151231496200#heading-9)
 
 对于微前端来说，应用间通信（主要为主应用-微应用）往往是架构设计之初就要考虑的核心需求。qiankun 自身在通信方面并不提供完整的解决方案，更多的是提供 api，通过这些 api 可以快捷地实现通讯功能，但是对于更丰富、未来可能更复杂地业务需求，我们还可以使用这些方案：
-![](//www.michaeljier.cn/m-picture/qiankun-part2/shared.png)
+![](/m-picture/qiankun-part2/shared.png)
 
 ### Actions 通信
 
@@ -26,8 +26,8 @@ qiankun 内部提供了 initGlobalState 方法用于注册 MicroAppStateActions 
 - setGlobalState：设置 globalState - 设置新的值时，内部将执行 浅检查，如果检查到 globalState 发生改变则触发通知，通知到所有的 观察者 函数。
 - onGlobalStateChange：注册 观察者 函数 - 响应 globalState 变化，在 globalState 发生改变时触发该 观察者 函数。
 - offGlobalStateChange：取消 观察者 函数 - 该实例不再响应 globalState 变化。
-  ![](//www.michaeljier.cn/m-picture/qiankun-part2/actions.jpg)
-  ![](//www.michaeljier.cn/m-picture/qiankun-part2/initGlobalState.png)
+  ![](/m-picture/qiankun-part2/actions.jpg)
+  ![](/m-picture/qiankun-part2/initGlobalState.png)
 
 #### 优缺点：
 

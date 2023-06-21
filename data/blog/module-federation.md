@@ -16,7 +16,7 @@ layout: PostLayout
 
 ## 共享模块的方案
 
-![](//www.michaeljier.cn/m-picture/module-federation/M.png)
+![](/m-picture/module-federation/M.png)
 
 ### 其他方案
 
@@ -40,7 +40,7 @@ layout: PostLayout
 &emsp;模块联邦是 Webpack5 推出的一个新的重要功能，可以真正意义上实现让跨应用间做到模块共享，解决了从前用 NPM 公共包方式共享的不便利，同时也可以作为微前端的落地方案。<br/>
 &emsp;从图中（上图右下）可以看到，这个方案是直接将一个应用的包应用于另一个应用，同时具备整体应用一起打包的公共依赖抽取能力。<br/>
 &emsp;让应用具备模块化输出能力，其实开辟了一种新的应用形态，即 “中心应用”，这个中心应用用于在线动态分发 Runtime 子模块，并不直接提供给用户使用：<br/>
-![](//www.michaeljier.cn/m-picture/module-federation/mid-app.png)
+![](/m-picture/module-federation/mid-app.png)
 &emsp;对微前端而言，这张图就是一个完美的主应用，因为所有子应用都可以利用 Runtime 方式复用主应用的 Npm 包和模块，更好的集成到主应用中。<br/>
 &emsp;与 qiankun 等微前端架构不同的另一点是，我们一般都是需要一个中心基座去控制微应用的生命周期，而 Module Federation 则是去中心化的，没有中心基座的概念，每一个模块或者应用都是可以导入或导出，跨项目模块的互相引用就变得十分简单了，而基座模式就可能需要提升到每个父应用去做全局共享管理。
 
@@ -163,8 +163,10 @@ export interface ModuleFederationPluginOptions {
   })
   ],
   });
+
   ```
    </details>
+  ```
 
 ## 原理分析
 

@@ -106,7 +106,7 @@ this.root = {
 
 ## 核心概念
 
-![](//www.michaeljier.cn/m-picture/diving-into-tailwindcss/core-concepts.png)
+![](/m-picture/diving-into-tailwindcss/core-concepts.png)
 
 ## 按需配置打包
 

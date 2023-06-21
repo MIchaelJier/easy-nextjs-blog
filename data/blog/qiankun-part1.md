@@ -61,7 +61,7 @@ qiankun 为我们提供了两种方法：
   > 💡shadowDom 另外一篇文章有详细的介绍：[在 React 中使用 Shadow DOM](/blog/shadow-dom)
 
 - experimentalStyleIsolation（实验性）：是给所有的样式选择器前面都加了当前挂载容器
-  ![](//www.michaeljier.cn/m-picture/qiankun-part1/experimentalStyleIsolation.png)
+  ![](/m-picture/qiankun-part1/experimentalStyleIsolation.png)
 
 但是比如追加进 body 标签的 dialog modal 框之类的样式这两种方式就不合适了，我们还可以使用：
 
@@ -73,7 +73,7 @@ qiankun 为我们提供了两种方法：
 
 ### js 沙箱
 
-![](//www.michaeljier.cn/m-picture/qiankun-part1/sandbox.png)
+![](/m-picture/qiankun-part1/sandbox.png)
 乾坤中使用到了 3 种沙箱：legacySandBox、proxySandBox 是基于 Proxy API 来实现的，在不支持 Proxy API 的低版本浏览器中，会降级为 snapshotSandBox。在现版本中，legacySandBox 仅用于 singular 单实例模式，而多实例模式会使用 proxySandBox。
 
 #### snapshotSandBox

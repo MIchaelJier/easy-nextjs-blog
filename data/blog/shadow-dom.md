@@ -12,7 +12,7 @@ layout: PostLayout
 ## Shadow DOM 是什么
 
 Shadow DOM 允许在文档（Document）渲染时插入一棵「子 DOM 树」，并且这棵子树不在主 DOM 树中，同时为子树中的 DOM 元素和 CSS 提供了封装的能力。Shadow DOM 使得子树 DOM 与主文档的 DOM 保持分离，子 DOM 树中的 CSS 不会影响到主 DOM 树的内容，如下图所示：
-![](//www.michaeljier.cn/m-picture/shadow-dom/shadow-tree.png)
+![](/m-picture/shadow-dom/shadow-tree.png)
 
 > 这里有几个需要了解和 Shadow DOM 相关的技术概念：  
 > `Shadow host`： 一个常规 DOM 节点，Shadow DOM 会被附加到这个节点上。  
@@ -76,7 +76,7 @@ const shadowroot = element.attachShadow(shadowRootInit)
 
 ## 兼容性
 
-![](//www.michaeljier.cn/m-picture/shadow-dom/compatibility.png)
+![](/m-picture/shadow-dom/compatibility.png)
 
 ## 在 React 中如何应用 Shadow DOM
 
@@ -111,7 +111,7 @@ ReactDOM.render(<App />, document.getElementById('root'))
 ```
 
 跑起来看看效果，一定会发现「咦？什么也没有显示」：
-![](//www.michaeljier.cn/m-picture/shadow-dom/demo1.png)
+![](/m-picture/shadow-dom/demo1.png)
 在这里需要稍注意一下，在一个元素上附加了 Shadow DOM 后，元素原本的「子元素」将不会再显示，并且这些子元素也不在 Shadow DOM 中，只有 host.shadowRoot 的子元素才是「子 DOM 树」中一部分。也就是说这个「子 DOM 树」的「根节点」是 host.shadowRoot 而非 host。 host.shadowRoot 是 ShadowRoot 的实例，而 ShadowRoot 则继承于 DocumentFragment，可通过原生 DOM API 操作其子元素。
 
 我们需通过 Element.attachShadow 附加到元素，然后就能拿到附加后的 ShadowRoot 实例。 针对 ShadowRoot 这样一个原生 DOM Node 的的引用，除了利用 ReactDOM.render 或 ReactDOM.createPortal ，我们并不能轻易的将 React.Element 渲染到其中，除非直接接操作 DOM。
@@ -168,7 +168,7 @@ ReactDOM.render(<App />, document.getElementById('root'))
 
 那为什么合成事件在 Shadow DOM 中不能被正常触发？是因为当在 Shadow DOM 外部捕获时浏览器会对事件进行「重定向」，也就是说在 Shadow DOM 中发生的事件在外部捕获时将会使用 host 元素作为事件源。这将让 React 在处理合成事件时，不认为 ShadowDOM 中元素基于 JSX 语法绑定的事件被触发了。
 
-![](//www.michaeljier.cn/m-picture/shadow-dom/demo2.png)
+![](/m-picture/shadow-dom/demo2.png)
 
 ### 3. 尝试利用 ReactDOM.render 改造一下
 
@@ -215,7 +215,7 @@ ReactDOM.render(<App />, document.getElementById('root'))
 
 为什么此时「隔离在 Shadow DOM 中的元素事件」能够被触发了呢？ 因为在 Reac 在发现渲染的目标在 ShadowRoot 中时，将会将事件绑定在通过 Element.getRootNode() 获取的 DocumentFragment 的 RootNode 上。
 
-![](//www.michaeljier.cn/m-picture/shadow-dom/demo3.png)
+![](/m-picture/shadow-dom/demo3.png)
 
 看似一切顺利，但却会发现父组件的 state 更新时，而 ShadowView 组件并没有更新。如上边的示例，其中的 message 显示的还是旧的，而原因就在我们使用 ReactDOM.render 时，Shadow DOM 的元素和父组件不在一个 React 渲染上下文中了。
 
@@ -269,5 +269,5 @@ export class App extends React.Component {
 ReactDOM.render(<App />, document.getElementById('root'))
 ```
 
-![](//www.michaeljier.cn/m-picture/shadow-dom/demo4.png)
+![](/m-picture/shadow-dom/demo4.png)
 Wow! 一切正常，有一个小问题是 createPortal 不支持 React 16 以下的版本，但大多数情况下这并不是个什么大问题。

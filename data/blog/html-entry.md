@@ -55,7 +55,7 @@ singleSpa.registerApplication(
 
 那么让我们来对比一下两者：
 
-![](//www.michaeljier.cn/m-picture/html-entry/compare-entry.png)
+![](/m-picture/html-entry/compare-entry.png)
 
 ## 原理简述
 
@@ -97,7 +97,7 @@ HTML Entry 是由 [import-html-entry](https://github.com/kuitos/import-html-entr
 
 ### 几个关键方法
 
-![](//www.michaeljier.cn/m-picture/html-entry/import-html-entry.png)
+![](/m-picture/html-entry/import-html-entry.png)
 
 - `importHTML`: 加载指定地址的首屏内容
 - `processTpl`: 从 html 模版中解析出外部脚本的地址或者内联脚本的代码块 和 link 标签的地址<br/>
@@ -108,13 +108,13 @@ HTML Entry 是由 [import-html-entry](https://github.com/kuitos/import-html-entr
 
 首先`importHTML`的参数为需要加载的页面 url，拿到后会先通过 fetch 方法读取页面内容，并且返回为页面 html 的字符串，接下来的`processTpl`方法比较关键，是一个核心方法。它会解析 html 的内容并且删除注释，获取 style 样式及 script 代码（下图 line38-82）。用的方法很明显是正则+replace，但是每一个步骤都做了很多适配，比如获取 script 脚本，需要区分该 script 是不是 entry script，type 是 JavaScript 还是 module，是行内 script 还是外链 script，是相对路径还是绝对路径，是否需要处理协议等等。很复杂！
 
-![](//www.michaeljier.cn/m-picture/html-entry/processTpl.png)
+![](/m-picture/html-entry/processTpl.png)
 
 `processTpl`的返回值也从上图可见，有 template，script，style，entry。为什么要把 entry 单独出来？它不是一个普通的 JavaScript 脚本么难道？肯定是因为它需要等其他 JavaScript 都加载好才能执行啦，不然肯定会报错的。`importHTML`拿到这些返回值，并暴露出来几个方法。最常用的肯定是`execScript`、`getExternalStyleSheets`、`getExternalScripts` 等上图画五角星的三个关键方法。
 
 ### `execScript`做了什么事
 
-![](//www.michaeljier.cn/m-picture/html-entry/execScript.png)
+![](/m-picture/html-entry/execScript.png)
 
 `execScript`会先调用内部方法 getExternalScript，将外部 script 拿到和行内 script 合并成一个队列按顺序执行。getExternalScript 的内部就是一个 promise.all 这也是我们使用 qiankun 后它就不必串行加载 script 的关键所在。getExternalScript 后所有的行内 script 和外部 script 都被以 text 的形式获取到，接下来就是执行 script 了，`execScript`还注册了两个内部函数，schedule 和 exec，很显然，schedule 会按照次序调度 exec 执行 script 代码，如何执行 JavaScript 字符串呢？ 使用 eval 解决的。  
 `getExternalStyleSheets`和`getExternalScripts`简单很多，只需要获取到 style 或者 JavaScript 文本就好了，返回给调用`importHTML`的开发者，自行处理。  

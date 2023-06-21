@@ -449,33 +449,33 @@ styled-components 提供了一系列 API，用于创建和管理样式化的组�
 
 ## 实现原理
 
-![](//www.michaeljier.cn/m-picture/styled-components-all-in-one/process.png)
+![](/m-picture/styled-components-all-in-one/process.png)
 
 ### 处理标签模板字面量
 
 styled-components 会进行两次 flatten，第一次 flatten 将能够静态化的都转换成字符串，将嵌套的 css 结构打平, 只剩下一些函数，这些函数只能在运行时(比如在组件渲染时)执行；第二次是在运行时，拿到函数的运行上下文(props、theme 等等)后, 执行所有函数，将函数的执行结果进行递归合并，最终生成的是一个纯字符串数组
 
-![](//www.michaeljier.cn/m-picture/styled-components-all-in-one/flatten.png)
+![](/m-picture/styled-components-all-in-one/flatten.png)
 
 <details>
 先从 styled 构造函数看起:
 
-![](//www.michaeljier.cn/m-picture/styled-components-all-in-one/styled-code.png)
+![](/m-picture/styled-components-all-in-one/styled-code.png)
 
 styled 构造函数接收一个包装组件 target，而标签模板字面量则由 css 函数进行处理的. 这个函数在 styled-components 中非常常用，类似于 SCSS 的 mixin 角色. css 函数会标签模板字面量规范化, 例如:
 
-![](//www.michaeljier.cn/m-picture/styled-components-all-in-one/css.png)
+![](/m-picture/styled-components-all-in-one/css.png)
 
 css 实现也非常简单:
 
-![](//www.michaeljier.cn/m-picture/styled-components-all-in-one/css-code.png)
+![](/m-picture/styled-components-all-in-one/css-code.png)
 
 interleave 函数将将静态字符串数组和内插值’拉链式‘交叉合并为单个数组, 比如[1, 2] + [a, b]会合并为[1, a, 2, b]
 关键在于如何将数组进行扁平化, 这个由 flatten 函数实现. flatten 函数会将嵌套的 css(数组形式)递归 concat 在一起，将 StyledComponent 组件转换为类名引用、还有处理 keyframe 等等. 最终剩下静态字符串和函数, 输出结果如上所示。
 
 我们再来看看 flatten 的实现:
 
-![](//www.michaeljier.cn/m-picture/styled-components-all-in-one/flatten-code.png)
+![](/m-picture/styled-components-all-in-one/flatten-code.png)
 
 </details>
 
@@ -488,11 +488,11 @@ interleave 函数将将静态字符串数组和内插值’拉链式‘交叉合
 
 <details>
 styled-components 通过 createStyledComponent 高阶组件将组件封装为 StyledComponent 组件:
-![](//www.michaeljier.cn/m-picture/styled-components-all-in-one/create-component.png)
+![](/m-picture/styled-components-all-in-one/create-component.png)
 createStyledComponent 是一个典型的高阶组件，它在执行期间会生成一个唯一的组件 id 和创建ComponentStyle对象. ComponentStyle 对象用于维护 css 函数生成的 cssRules, 在运行时(组件渲染时)得到执行的上下文后生成最终的样式和类名。
 
 再来看看 StyledComponent 的实现, StyledComponent 在组件渲染时，将当前的 props+theme 作为 context 传递给 ComponentStyle，生成类名.
-![](//www.michaeljier.cn/m-picture/styled-components-all-in-one/StyledComponent.png)
+![](/m-picture/styled-components-all-in-one/StyledComponent.png)
 
 </details>
 
@@ -504,7 +504,7 @@ createStyledComponent 是一个典型的高阶组件，它在执行期间会生�
 
 <details>
    上面看到 StyleComponent 通过 ComponentStyle 类来构造样式表并生成类名, ComponentStyle 拿到 context 后，再次调用 flatten 将 css rule 扁平化，得到一个纯字符串数组。通过使用 hash 算法生成类名, 并使用stylis 对样式进行预处理. 最后通过 StyleSheet 对象将样式规则插入到 DOM 中
-    ![](//www.michaeljier.cn/m-picture/styled-components-all-in-one/makeTag.png)
+    ![](/m-picture/styled-components-all-in-one/makeTag.png)
     [stylis](https://github.com/thysultan/stylis/blob/master/README.md)是一个 3kb 的轻量的 CSS 预处理器, styled-components 所有的 CSS 特性都依赖于它， 例如嵌套规则`(a {&:hover{}})`、厂商前缀、压缩等等.
 </details>
 
@@ -516,9 +516,9 @@ head 中插入一个 style 节点，并返回 className；创建一个 style 的
 
 <details>
     StyleSheet 负责收集所有组件的样式规则，并插入到 DOM 中
-    ![](//www.michaeljier.cn/m-picture/styled-components-all-in-one/StyleSheet.png)
+    ![](/m-picture/styled-components-all-in-one/StyleSheet.png)
     看看简化版的 makeTag
-    ![](//www.michaeljier.cn/m-picture/styled-components-all-in-one/makeTag.png)
+    ![](/m-picture/styled-components-all-in-one/makeTag.png)
 </details>
 ## 性能优化建议
 styled-components 每次渲染都会重新计算 cssRule，并进行 hash 计算出 className，如果已经对应的 className 还没插入到样式表中，则使用 stylis 进行预处理，并插入到样式表中;

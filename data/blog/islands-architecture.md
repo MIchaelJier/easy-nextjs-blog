@@ -13,7 +13,7 @@ layout: PostLayout
 
 概览图：
 
-![](//www.michaeljier.cn/m-picture/islands-architecture/overview-map.png)
+![](/m-picture/islands-architecture/overview-map.png)
 
 这其中的典型代表是 Astro。Astro 对岛屿架构的解释，也非常直观：
 
@@ -77,7 +77,7 @@ import { Counter } from '../components/Counter';
 </style>
 ```
 
-![](//www.michaeljier.cn/m-picture/islands-architecture/astro-demo.png)
+![](/m-picture/islands-architecture/astro-demo.png)
 
 这语法，astro 集大家之所长，吸取了 Vue SFC 和 React 的 JSX, 还有 MDX。
 
@@ -85,11 +85,11 @@ import { Counter } from '../components/Counter';
 
 然而，这个有别于典型的 SSR 框架。SSR 也是在服务端渲染完整 HTML 树，但是在客户端依然需要加载完整的视图框架代码，然后进行水合(Hydration)，才能让页面变得可交互:
 
-![](//www.michaeljier.cn/m-picture/islands-architecture/hydrate.png)
+![](/m-picture/islands-architecture/hydrate.png)
 
 那 Astro 没有 JS，显然是无法与用户进行动态交互的。Astro 的解决办法就是 岛屿架构, 我们只需将需要动态交互的页面模块声明为岛屿，如下图，页头和图片轮播就是可交互的岛屿。
 
-![](//www.michaeljier.cn/m-picture/islands-architecture/island.png)
+![](/m-picture/islands-architecture/island.png)
 
 现在将 React 组件声明为岛屿：
 
@@ -122,13 +122,13 @@ import { Counter } from '../components/Counter';
 
 我们只需将对应的 React 组件加上 client:load 指令，Astro 就是将其识别为岛屿，该 React 组件的代码及其相关依赖会被打包到一起，在客户端端加载和水合。
 
-![](//www.michaeljier.cn/m-picture/islands-architecture/astro-demo-2.png)
+![](/m-picture/islands-architecture/astro-demo-2.png)
 
 现在我们的 Counter 组件在客户端就是一个可交互的状态了。Astro 基本上没有什么上手门槛，建议读者自己玩一下。有机会再展开讲一下它的实现原理。
 
 有了‘岛屿’赋能的 Astro 架构：
 
-![](//www.michaeljier.cn/m-picture/islands-architecture/astro-hydrate.png)
+![](/m-picture/islands-architecture/astro-hydrate.png)
 
 Astro 在服务端渲染完整的 HTML 树，然后在客户端中按需加载岛屿代码，并进行水合。看起来有点像微前端、或者 iframe 这样的机制。
 
