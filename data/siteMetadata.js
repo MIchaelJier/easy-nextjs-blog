@@ -7,11 +7,11 @@ const siteMetadata = {
   language: 'en-us',
   theme: 'system', // system, dark or light
   siteUrl: 'http://www.michaeljier.cn',
-  siteRepo: 'https://github.com/MIchaelJier/easy-next-blog',
+  siteRepo: 'https://github.com/MIchaelChene/easy-next-blog',
   siteLogo: '/static/images/logo.png',
   image: '/static/images/avatar.png',
   email: 'chem908430737@gmail.com',
-  github: 'https://github.com/MIchaelJier',
+  github: 'https://github.com/MIchaelChene',
   juejin: 'https://juejin.cn/user/835284569426029',
   locale: 'zh-CN',
   welcome: 'NEVER STOP EXPLORING',

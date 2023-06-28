@@ -4,7 +4,7 @@ avatar: /static/images/avatar.png
 occupation: 前端工程师
 company: 996工作中...
 email: chem908430737@gmail.com
-github: https://github.com/MIchaelJier
+github: https://github.com/MIchaelChene
 juejin: https://juejin.cn/user/835284569426029
 ---
 
